@@ -76,14 +76,17 @@ void SecPassword::Clean()
 // So we use our own function for this purpose.
 void cleandata(void *data,size_t size)
 {
-#if defined(_WIN_ALL) && defined(_MSC_VER)
+#ifdef _WIN_ALL
   SecureZeroMemory(data,size);
 #else
   // 'volatile' is required. Otherwise optimizers can remove this function
   // if cleaning local variables, which are not used after that.
   volatile byte *d = (volatile byte *)data;
-  for (size_t i=0;i<size;i++)
-    d[i]=0;
+  while (size>0)
+  {
+    *d=0;
+    size--;
+  }
 #endif
 }
 
