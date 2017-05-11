@@ -28,7 +28,6 @@ void CommandData::Init()
 
   ListMode=RCLM_AUTO;
 
-
   FileArgs=new StringList;
   ExclArgs=new StringList;
   InclArgs=new StringList;
@@ -253,9 +252,7 @@ void CommandData::ParseEnvVar()
 {
   char *EnvStr=getenv("RAR");
   if (EnvStr!=NULL)
-  {
     ProcessSwitchesString(EnvStr);
-  }
 }
 #endif
 
@@ -654,16 +651,13 @@ void CommandData::ProcessSwitch(const char *Switch,const wchar *SwitchW)
     case 'P':
       if (Switch[1]==0)
       {
-        GetPassword(PASSWORD_GLOBAL,NULL,NULL,&Password);
+        GetPassword(PASSWORD_GLOBAL,NULL,NULL,Password,ASIZE(Password));
         eprintf("\n");
       }
       else
       {
-        wchar PlainPsw[MAXPASSWORD];
-        CharToWide(Switch+1,PlainPsw,ASIZE(PlainPsw));
-        PlainPsw[ASIZE(PlainPsw)-1]=0;
-        Password.Set(PlainPsw);
-        cleandata(PlainPsw,ASIZE(PlainPsw));
+        CharToWide(Switch+1,Password,ASIZE(Password));
+        Password[ASIZE(Password)-1]=0;
       }
       break;
     case 'H':
@@ -672,16 +666,13 @@ void CommandData::ProcessSwitch(const char *Switch,const wchar *SwitchW)
         EncryptHeaders=true;
         if (Switch[2]!=0)
         {
-          wchar PlainPsw[MAXPASSWORD];
-          CharToWide(Switch+2,PlainPsw,ASIZE(PlainPsw));
-          PlainPsw[ASIZE(PlainPsw)-1]=0;
-          Password.Set(PlainPsw);
-          cleandata(PlainPsw,ASIZE(PlainPsw));
+          CharToWide(Switch+2,Password,ASIZE(Password));
+          Password[ASIZE(Password)-1]=0;
         }
         else
-          if (!Password.IsSet())
+          if (*Password==0)
           {
-            GetPassword(PASSWORD_GLOBAL,NULL,NULL,&Password);
+            GetPassword(PASSWORD_GLOBAL,NULL,NULL,Password,ASIZE(Password));
             eprintf("\n");
           }
       }
@@ -816,7 +807,7 @@ void CommandData::ProcessSwitch(const char *Switch,const wchar *SwitchW)
           VolSize=0;
           break;
         default:
-          VolSize=VOLSIZE_AUTO; // UnRAR -v switch for list command.
+          VolSize=INT64NDF; // UnRAR -v switch for list command.
           break;
       }
       break;

@@ -366,14 +366,6 @@ const wchar* GetWide(const char *Src)
 }
 
 
-const wchar* GetWide(const char *Src,const wchar *SrcW)
-{
-  if (SrcW!=NULL && *SrcW!=0)
-    return SrcW;
-  return GetWide(Src);
-}
-
-
 #ifdef _WIN_ALL
 // Parse string containing parameters separated with spaces.
 // Support quote marks. Param can be NULL to return the pointer to next

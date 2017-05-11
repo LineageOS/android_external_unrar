@@ -5,12 +5,10 @@ class Pack;
 
 enum {EN_LOCK=1,EN_VOL=2,EN_FIRSTVOL=4};
 
-enum ARCSIGN_TYPE {ARCSIGN_NONE,ARCSIGN_OLD,ARCSIGN_CURRENT,ARCSIGN_FUTURE};
-
 class Archive:public File
 {
   private:
-    ARCSIGN_TYPE IsSignature(const byte *D,size_t Size);
+    bool IsSignature(byte *D);
     void UpdateLatestTime(FileHeader *CurBlock);
     void ConvertNameCase(char *Name);
     void ConvertNameCase(wchar *Name);

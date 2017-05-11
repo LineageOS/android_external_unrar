@@ -147,7 +147,6 @@ void GetPasswordText(wchar *Str,uint MaxLength)
   strncpyz(StrA,getpass(""),ASIZE(StrA));
 #endif
   CharToWide(StrA,Str,MaxLength);
-  cleandata(StrA,sizeof(StrA));
 #endif
   Str[MaxLength-1]=0;
   RemoveLF(Str);
@@ -157,8 +156,7 @@ void GetPasswordText(wchar *Str,uint MaxLength)
 
 
 #ifndef SILENT
-bool GetPassword(PASSWORD_TYPE Type,const char *FileName,const wchar *FileNameW,
-                 SecPassword *Password)
+bool GetPassword(PASSWORD_TYPE Type,const char *FileName,const wchar *FileNameW,wchar *Password,uint MaxLength)
 {
   Alarm();
   while (true)
@@ -177,27 +175,23 @@ bool GetPassword(PASSWORD_TYPE Type,const char *FileName,const wchar *FileNameW,
         strcat(PromptStr,NameOnly);
     }
     eprintf("\n%s: ",PromptStr);
-
-    wchar PlainPsw[MAXPASSWORD];
-    GetPasswordText(PlainPsw,ASIZE(PlainPsw));
-    if (*PlainPsw==0 && Type==PASSWORD_GLOBAL)
+    GetPasswordText(Password,MaxLength);
+    if (*Password==0 && Type==PASSWORD_GLOBAL)
       return(false);
     if (Type==PASSWORD_GLOBAL)
     {
       eprintf(St(MReAskPsw));
       wchar CmpStr[MAXPASSWORD];
       GetPasswordText(CmpStr,ASIZE(CmpStr));
-      if (*CmpStr==0 || wcscmp(PlainPsw,CmpStr)!=0)
+      if (*CmpStr==0 || wcscmp(Password,CmpStr)!=0)
       {
         eprintf(St(MNotMatchPsw));
-        cleandata(PlainPsw,sizeof(PlainPsw));
-        cleandata(CmpStr,sizeof(CmpStr));
+        memset(Password,0,MaxLength*sizeof(*Password));
+        memset(CmpStr,0,sizeof(CmpStr));
         continue;
       }
-      cleandata(CmpStr,sizeof(CmpStr));
+      memset(CmpStr,0,sizeof(CmpStr));
     }
-    Password->Set(PlainPsw);
-    cleandata(PlainPsw,sizeof(PlainPsw));
     break;
   }
   return(true);

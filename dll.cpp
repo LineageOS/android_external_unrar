@@ -337,10 +337,7 @@ void PASCAL RARSetProcessDataProc(HANDLE hArcData,PROCESSDATAPROC ProcessDataPro
 void PASCAL RARSetPassword(HANDLE hArcData,char *Password)
 {
   DataSet *Data=(DataSet *)hArcData;
-  wchar PasswordW[MAXPASSWORD];
-  GetWideName(Password,NULL,PasswordW,ASIZE(PasswordW));
-  Data->Cmd.Password.Set(PasswordW);
-  cleandata(PasswordW,sizeof(PasswordW));
+  GetWideName(Password,NULL,Data->Cmd.Password,ASIZE(Data->Cmd.Password));
 }
 #endif
 

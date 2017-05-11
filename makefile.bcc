@@ -57,7 +57,6 @@ Dep_SFX= \
    $(objpath)\strlist.obj\
    $(objpath)\strfn.obj\
    $(objpath)\pathfn.obj\
-   $(objpath)\secpassword.obj\
    $(objpath)\cmddata.obj\
    $(objpath)\consio.obj\
    $(objpath)\savepos.obj\
@@ -175,7 +174,6 @@ $(objpath)\getbits.obj+
 $(objpath)\rarvm.obj+
 $(objpath)\rdwrfn.obj+
 $(objpath)\consio.obj+
-$(objpath)\secpassword.obj+
 $(objpath)\cmddata.obj+
 $(objpath)\options.obj+
 $(objpath)\ulinks.obj+
@@ -429,11 +427,6 @@ $(objpath)\rdwrfn.obj :  $(rarpath)\rdwrfn.cpp
 $(objpath)\consio.obj :  $(rarpath)\consio.cpp
   $(cc) -q @&&|
  $(compopt) -o$@ $(rarpath)\consio.cpp
-|
-
-$(objpath)\secpassword.obj :  $(rarpath)\secpassword.cpp
-  $(cc) -q @&&|
- $(compopt) -o$@ $(rarpath)\secpassword.cpp
 |
 
 $(objpath)\cmddata.obj :  $(rarpath)\cmddata.cpp

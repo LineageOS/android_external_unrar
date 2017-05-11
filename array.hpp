@@ -19,7 +19,6 @@ template <class T> class Array
     void Add(size_t Items);
     void Alloc(size_t Items);
     void Reset();
-    void SoftReset();
     void operator = (Array<T> &Src);
     void Push(T Item);
     T* Addr() {return(Buffer);}
@@ -102,14 +101,6 @@ template <class T> void Array<T>::Reset()
   }
   BufSize=0;
   AllocSize=0;
-}
-
-
-// Reste buffer size, but preserve already allocated memory if any,
-// so we can reuse it without wasting time to allocation.
-template <class T> void Array<T>::SoftReset()
-{
-  BufSize=0;
 }
 
 

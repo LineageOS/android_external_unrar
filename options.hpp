@@ -1,11 +1,9 @@
 #ifndef _RAR_OPTIONS_
 #define _RAR_OPTIONS_
 
-#define DEFAULT_RECOVERY     -1
+#define DEFAULT_RECOVERY    -1
 
 #define DEFAULT_RECVOLUMES  -10
-
-#define VOLSIZE_AUTO   INT64NDF // Automatically detect the volume size.
 
 enum PATH_EXCL_MODE {
   EXCL_UNCHANGED=0,    // Process paths as is (default).
@@ -86,7 +84,7 @@ class RAROptions
     RAR_CHARSET FilelistCharset;
     char ArcPath[NM];
     wchar ArcPathW[NM];
-    SecPassword Password;
+    wchar Password[MAXPASSWORD];
     bool EncryptHeaders;
     char LogName[NM];
     MESSAGE_TYPE MsgStream;
