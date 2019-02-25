@@ -17,7 +17,15 @@ LOCAL_C_INCLUDES := src
 LOCAL_CFLAGS := -O2 -Wall -DUNRAR -D__BIONIC__ \
                 -D_LARGEFILE_SOURCE -DNOVOLUME -DRAR_NOCRYPT
 
-LOCAL_CFLAGS += -Wno-error -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-logical-op-parentheses -Wno-dangling-else
+LOCAL_CFLAGS += \
+    -Wno-dangling-else \
+    -Wno-logical-op-parentheses \
+    -Wno-missing-braces \
+    -Wno-sign-compare \
+    -Wno-switch \
+    -Wno-unused-function \
+    -Wno-unused-parameter \
+    -Wno-unused-variable
 
 LOCAL_ARM_MODE := arm
 
@@ -27,4 +35,3 @@ LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
 LOCAL_CLANG := false
 
 include $(BUILD_EXECUTABLE)
-
