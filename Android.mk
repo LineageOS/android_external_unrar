@@ -18,9 +18,11 @@ LOCAL_CFLAGS := -O2 -Wall -DUNRAR -D__BIONIC__ \
 
 LOCAL_CFLAGS += \
     -Wno-dangling-else \
+    -Wno-implicit-fallthrough \
     -Wno-logical-op-parentheses \
     -Wno-missing-braces \
     -Wno-sign-compare \
+    -Wno-sizeof-pointer-div \
     -Wno-switch \
     -Wno-unused-function \
     -Wno-unused-parameter \
