@@ -29,11 +29,7 @@ void ExtractUnixOwner(Archive &Arc,char *FileName)
     ErrHandler.SetErrorCode(RARX_CRC);
     return;
   }
-#ifndef __BIONIC__
   uint Attr=GetFileAttr(FileName,NULL);
-#else
-  uint Attr=GetFileAttr(FileName);
-#endif
   gid_t GroupID=gr->gr_gid;
 #if defined(SAVE_LINKS) && !defined(_APPLE)
   if (lchown(FileName,OwnerID,GroupID)!=0)
@@ -44,11 +40,7 @@ void ExtractUnixOwner(Archive &Arc,char *FileName)
     Log(Arc.FileName,St(MSetOwnersError),FileName);
     ErrHandler.SetErrorCode(RARX_CREATE);
   }
-#ifndef __BIONIC__
   SetFileAttr(FileName,NULL,Attr);
-#else
-  SetFileAttr(FileName,Attr);
-#endif
 }
 
 
@@ -77,11 +69,7 @@ void ExtractUnixOwnerNew(Archive &Arc,char *FileName)
     ErrHandler.SetErrorCode(RARX_CRC);
     return;
   }
-#ifndef __BIONIC__
   uint Attr=GetFileAttr(FileName,NULL);
-#else
-  uint Attr=GetFileAttr(FileName);
-#endif
   gid_t GroupID=gr->gr_gid;
 #if defined(SAVE_LINKS) && !defined(_APPLE)
   if (lchown(FileName,OwnerID,GroupID)!=0)
@@ -92,9 +80,5 @@ void ExtractUnixOwnerNew(Archive &Arc,char *FileName)
     Log(Arc.FileName,St(MSetOwnersError),FileName);
     ErrHandler.SetErrorCode(RARX_CREATE);
   }
-#ifndef __BIONIC__
   SetFileAttr(FileName,NULL,Attr);
-#else
-  SetFileAttr(FileName,Attr);
-#endif
 }

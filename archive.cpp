@@ -42,9 +42,7 @@ Archive::Archive(RAROptions *InitCmd)
   *SubDataSalt=0;
 #endif
   *FirstVolumeName=0;
-#ifndef __BIONIC__
   *FirstVolumeNameW=0;
-#endif
 
   Splitting=false;
   NewArchive=false;
@@ -68,32 +66,17 @@ void Archive::CheckArc(bool EnableBroken)
 
 
 #if !defined(SHELL_EXT) && !defined(SFX_MODULE)
-#ifndef __BIONIC__
 void Archive::CheckOpen(const char *Name,const wchar *NameW)
-#else
-void Archive::CheckOpen(const char *Name)
-#endif
 {
-#ifndef __BIONIC__
   TOpen(Name,NameW);
-#else
-  TOpen(Name);
-#endif
   CheckArc(false);
 }
 #endif
 
-#ifndef __BIONIC__
+
 bool Archive::WCheckOpen(const char *Name,const wchar *NameW)
-#else
-bool Archive::WCheckOpen(const char *Name)
-#endif
 {
-#ifndef __BIONIC__
   if (!WOpen(Name,NameW))
-#else
-  if (!WOpen(Name))
-#endif
     return(false);
   if (!IsArchive(false))
   {
@@ -267,9 +250,7 @@ bool Archive::IsArchive(bool EnableBroken)
   if (!Volume || !NotFirstVolume)
   {
     strcpy(FirstVolumeName,FileName);
-#ifndef __BIONIC__
     wcscpy(FirstVolumeNameW,FileNameW);
-#endif
   }
 
   return(true);

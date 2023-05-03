@@ -30,8 +30,6 @@ enum {
 #define MATCH_FORCECASESENSITIVE 0x80000000
 
 bool CmpName(const char *Wildcard,const char *Name,int CmpMode);
-#ifndef __BIONIC__
 bool CmpName(const wchar *Wildcard,const wchar *Name,int CmpMode);
-#endif
 
 #endif

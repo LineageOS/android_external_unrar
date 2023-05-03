@@ -1,10 +1,6 @@
 #include "rar.hpp"
 
-#ifndef __BIONIC__
 MKDIR_CODE MakeDir(const char *Name,const wchar *NameW,bool SetAttr,uint Attr)
-#else
-MKDIR_CODE MakeDir(const char *Name,bool SetAttr,uint Attr)
-#endif
 {
 #ifdef _WIN_ALL
   BOOL RetCode;
@@ -40,11 +36,7 @@ MKDIR_CODE MakeDir(const char *Name,bool SetAttr,uint Attr)
   #endif
     {
       if (SetAttr)
-#ifndef __BIONIC__
         SetFileAttr(Name,NameW,Attr);
-#else
-        SetFileAttr(Name,Attr);
-#endif
       return(MKDIR_SUCCESS);
     }
     return(errno==ENOENT ? MKDIR_BADPATH:MKDIR_ERROR);
@@ -86,11 +78,7 @@ bool CreatePath(const char *Path,bool SkipLastName)
       strncpy(DirName,Path,s-Path);
       DirName[s-Path]=0;
 
-#ifndef __BIONIC__
       if (MakeDir(DirName,NULL,true,DirAttr)==MKDIR_SUCCESS)
-#else
-      if (MakeDir(DirName,true,DirAttr)==MKDIR_SUCCESS)
-#endif
       {
 #ifndef GUI
         mprintf(St(MCreatDir),DirName);
@@ -103,16 +91,12 @@ bool CreatePath(const char *Path,bool SkipLastName)
   }
   if (!SkipLastName)
     if (!IsPathDiv(*PointToLastChar(Path)))
-#ifndef __BIONIC__
       if (MakeDir(Path,NULL,true,DirAttr)!=MKDIR_SUCCESS)
-#else
-      if (MakeDir(Path,true,DirAttr)!=MKDIR_SUCCESS)
-#endif
         Success=false;
   return(Success);
 }
 
-#ifndef __BIONIC__
+
 bool CreatePath(const wchar *Path,bool SkipLastName)
 {
   if (Path==NULL || *Path==0)
@@ -173,14 +157,9 @@ bool CreatePath(const char *Path,const wchar *PathW,bool SkipLastName)
     return(CreatePath(Path,SkipLastName));
   return(false);
 }
-#endif
 
 
-#ifndef __BIONIC__
 void SetDirTime(const char *Name,const wchar *NameW,RarTime *ftm,RarTime *ftc,RarTime *fta)
-#else
-void SetDirTime(const char *Name,RarTime *ftm,RarTime *ftc,RarTime *fta)
-#endif
 {
 #ifdef _WIN_ALL
   if (!WinNT())
@@ -326,11 +305,8 @@ int64 GetFreeDisk(const char *Name)
 
 
 
-#ifndef __BIONIC__
+
 bool FileExist(const char *Name,const wchar *NameW)
-#else
-bool FileExist(const char *Name)
-#endif
 {
 #ifdef _WIN_ALL
     if (WinNT() && NameW!=NULL && *NameW!=0)
@@ -341,46 +317,28 @@ bool FileExist(const char *Name)
   return(access(Name,0)==0);
 #else
   FindData FD;
-#ifndef __BIONIC__
   return(FindFile::FastFind(Name,NameW,&FD));
-#else
-  return(FindFile::FastFind(Name,&FD));
-#endif
 #endif
 }
 
-#ifndef __BIONIC__
+
 bool FileExist(const wchar *Name)
 {
   return FileExist(NULL,Name);
 }
-#endif
  
-#ifndef __BIONIC__
+
 bool WildFileExist(const char *Name,const wchar *NameW)
-#else
-bool WildFileExist(const char *Name)
-#endif
 {
-#ifndef __BIONIC__
   if (IsWildcard(Name,NameW))
-#else
-  if (IsWildcard(Name))
-#endif
   {
     FindFile Find;
     Find.SetMask(Name);
-#ifndef __BIONIC__
     Find.SetMaskW(NameW);
-#endif
     FindData fd;
     return(Find.Next(&fd));
   }
-#ifndef __BIONIC__
   return(FileExist(Name,NameW));
-#else
-  return(FileExist(Name));
-#endif
 }
 
 
@@ -437,11 +395,8 @@ bool IsDeleteAllowed(uint FileAttr)
 #endif
 }
 
-#ifndef __BIONIC__
+
 void PrepareToDelete(const char *Name,const wchar *NameW)
-#else
-void PrepareToDelete(const char *Name)
-#endif
 {
 #if defined(_WIN_ALL) || defined(_EMX)
   SetFileAttr(Name,NameW,0);
@@ -452,11 +407,8 @@ void PrepareToDelete(const char *Name)
 #endif
 }
 
-#ifndef __BIONIC__
+
 uint GetFileAttr(const char *Name,const wchar *NameW)
-#else
-uint GetFileAttr(const char *Name)
-#endif
 {
 #ifdef _WIN_ALL
     if (WinNT() && NameW!=NULL && *NameW!=0)
@@ -477,11 +429,8 @@ uint GetFileAttr(const char *Name)
 #endif
 }
 
-#ifndef __BIONIC__
+
 bool SetFileAttr(const char *Name,const wchar *NameW,uint Attr)
-#else
-bool SetFileAttr(const char *Name,uint Attr)
-#endif
 {
   bool Success;
 #ifdef _WIN_ALL
@@ -559,28 +508,22 @@ uint CalcFileCRC(File *SrcFile,int64 Size,CALCCRC_SHOWMODE ShowMode)
 }
 #endif
 
-#ifndef __BIONIC__
+
 bool RenameFile(const char *SrcName,const wchar *SrcNameW,const char *DestName,const wchar *DestNameW)
-#else
-bool RenameFile(const char *SrcName,const char *DestName)
-#endif
 {
   return(rename(SrcName,DestName)==0);
 }
 
-#ifndef __BIONIC__
+
 bool DelFile(const char *Name)
 {
   return(DelFile(Name,NULL));
 }
-#endif
 
 
-#ifndef __BIONIC__
+
+
 bool DelFile(const char *Name,const wchar *NameW)
-#else
-bool DelFile(const char *Name)
-#endif
 {
   return(Name!=NULL && remove(Name)==0);
 }

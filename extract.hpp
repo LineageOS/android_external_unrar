@@ -26,17 +26,13 @@ class CmdExtract
     bool AnySolidDataUnpackedWell;
 
     char ArcName[NM];
-#ifndef __BIONIC__
     wchar ArcNameW[NM];
-#endif
 
     SecPassword Password;
     bool PasswordAll;
     bool PrevExtracted;
     char DestFileName[NM];
-#ifndef __BIONIC__
     wchar DestFileNameW[NM];
-#endif
     bool PasswordCancelled;
   public:
     CmdExtract();

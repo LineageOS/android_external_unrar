@@ -15,26 +15,15 @@ void ListArchive(CommandData *Cmd)
   bool Verbose=(*Cmd->Command=='V');
 
   char ArcName[NM];
-#ifndef __BIONIC__
   wchar ArcNameW[NM];
-#endif
 
-
-#ifndef __BIONIC__
   while (Cmd->GetArcName(ArcName,ArcNameW,sizeof(ArcName)))
-#else
-  while (Cmd->GetArcName(ArcName,sizeof(ArcName)))
-#endif
   {
     Archive Arc(Cmd);
 #ifdef _WIN_ALL
     Arc.RemoveSequentialFlag();
 #endif
-#ifndef __BIONIC__
     if (!Arc.WOpen(ArcName,ArcNameW))
-#else
-    if (!Arc.WOpen(ArcName))
-#endif
       continue;
     bool FileMatched=true;
     while (1)
@@ -206,14 +195,12 @@ void ListFileHeader(FileHeader &hd,bool Verbose,bool Technical,bool &TitleShown,
   char *Name=hd.FileName;
 
 #ifdef UNICODE_SUPPORTED
-#ifndef __BIONIC__
   char ConvertedName[NM];
   if ((hd.Flags & LHD_UNICODE)!=0 && *hd.FileNameW!=0 && UnicodeEnabled())
   {
     if (WideToChar(hd.FileNameW,ConvertedName) && *ConvertedName!=0)
       Name=ConvertedName;
   }
-#endif
 #endif
 
   if (Bare)
@@ -380,11 +367,7 @@ void ListNewSubHeader(CommandData *Cmd,Archive &Arc,bool Technical)
       (Arc.SubHead.Flags & LHD_SPLIT_BEFORE)==0 && !Cmd->DisableComment)
   {
     Array<byte> CmtData;
-#ifndef __BIONIC__
     size_t ReadSize=Arc.ReadCommentData(&CmtData,NULL);
-#else
-    size_t ReadSize=Arc.ReadCommentData(&CmtData);
-#endif
     if (ReadSize!=0)
     {
       mprintf(St(MFileComment));
@@ -394,7 +377,6 @@ void ListNewSubHeader(CommandData *Cmd,Archive &Arc,bool Technical)
   if (Arc.SubHead.CmpName(SUBHEAD_TYPE_STREAM) &&
       (Arc.SubHead.Flags & LHD_SPLIT_BEFORE)==0)
   {
-#ifndef __BIONIC__
     size_t DestSize=Arc.SubHead.SubData.Size()/2;
     wchar DestNameW[NM];
     char DestName[NM];
@@ -405,10 +387,5 @@ void ListNewSubHeader(CommandData *Cmd,Archive &Arc,bool Technical)
       WideToChar(DestNameW,DestName);
       mprintf("\n %s",DestName);
     }
-#else
-    size_t DestSize=Arc.SubHead.SubData.Size();
-    char DestName[NM];
-    strncpyz(DestName,(const char *)&Arc.SubHead.SubData[0],ASIZE(DestName));
-#endif
   }
 }

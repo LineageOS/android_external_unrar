@@ -8,9 +8,7 @@ enum FINDDATA_FLAGS {
 struct FindData
 {
   char Name[NM];
-#ifndef __BIONIC__
   wchar NameW[NM];
-#endif
   int64 Size;
   uint FileAttr;
   uint FileTime;
@@ -36,9 +34,7 @@ class FindFile
 #endif
 
     char FindMask[NM];
-#ifndef __BIONIC__
     wchar FindMaskW[NM];
-#endif
     bool FirstCall;
 #ifdef _WIN_ALL
     HANDLE hFind;
@@ -49,15 +45,9 @@ class FindFile
     FindFile();
     ~FindFile();
     void SetMask(const char *FindMask);
-#ifndef __BIONIC__
     void SetMaskW(const wchar *FindMaskW);
-#endif
     bool Next(FindData *fd,bool GetSymLink=false);
-#ifndef __BIONIC__
     static bool FastFind(const char *FindMask,const wchar *FindMaskW,FindData *fd,bool GetSymLink=false);
-#else
-    static bool FastFind(const char *FindMask,FindData *fd,bool GetSymLink=false);
-#endif
 };
 
 #endif
