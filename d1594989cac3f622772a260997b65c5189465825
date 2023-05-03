@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "efd1241f_c0758b11",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 17945
+      },
+      "writtenOn": "2023-05-03T11:44:13Z",
+      "side": 1,
+      "message": "This is a SQUASH as I do not have write permissions!\n\nThe actual unsquashed repo with full commit history is here:\nhttps://github.com/DroidFreak32/android_external_unrar/commits/lineage-20.0\n\nThere have been a lot of changes in Android and unrar since the last v4.2.0 (nice) codebase.\nMost of the patches that were needed are no longer necessary.\nThis series of patches aims to bring back unrar support inline with a recent upstream version.\nThis series also retains the complete unrar version history from v3.1 to v6.2.6\n\nWhy unrar?\n* Unlike other archive formats, .rar has amazing capability of splitting an archive into chunks of specified sizes, and unlike 7z.00X we can partially extract from each slice\n* Most of split-archived files found online are still made with .rar which this unrar package can extract.\n\nWhy not upstream p7zip?\n* p7zip is unofficially maintained by a fork\n* It is very difficult to get it compiled on Android due to it being dependent on other archive libraries (brotli, zstdlib etc)\n* Does not support *nix permissions",
+      "revId": "d1594989cac3f622772a260997b65c5189465825",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    }
+  ]
+}
