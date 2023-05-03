@@ -16,6 +16,9 @@ bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *
   inline void eprintf(const wchar *fmt,...) {}
   inline void Alarm() {}
   inline int Ask(const wchar *AskStr) {return 0;}
+#ifdef __BIONIC__
+  const char *getpass(const char *prompt);
+#endif
   inline bool getwstr(wchar *str,size_t n) {return false;}
 #else
   void mprintf(const wchar *fmt,...);

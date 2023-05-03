@@ -117,6 +117,7 @@ class CheckPassword
     enum CONFIDENCE {CONFIDENCE_HIGH,CONFIDENCE_MEDIUM,CONFIDENCE_LOW};
     virtual CONFIDENCE GetConfidence()=0;
     virtual bool Check(SecPassword *Password)=0;
+    virtual ~CheckPassword() = default;
 };
 
 class RarCheckPassword:public CheckPassword

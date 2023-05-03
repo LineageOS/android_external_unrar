@@ -1,6 +1,10 @@
 #include "rar.hpp"
 #include "log.cpp"
 
+#ifdef __BIONIC__
+#include <termios.h>
+#endif
+
 static MESSAGE_TYPE MsgStream=MSG_STDOUT;
 static RAR_CHARSET RedirectCharset=RCH_DEFAULT;
 static bool ProhibitInput=false;
@@ -159,6 +163,35 @@ static void QuitIfInputProhibited()
   }
 }
 
+#if !defined(_EMX) && !defined(_BEOS) && !defined(__sparc) && !defined(sparc) && !defined (__VMS)
+#ifdef __BIONIC__
+const char *getpass(const char *prompt) {
+    struct termios oflags, nflags;
+    static char password[64];
+
+    // disabling echo
+    tcgetattr(fileno(stdin), &oflags);
+    nflags = oflags;
+    nflags.c_lflag &= ~ECHO;
+    nflags.c_lflag |= ECHONL;
+
+    if (tcsetattr(fileno(stdin), TCSANOW, &nflags) != 0) {
+        return "\0";
+    }
+
+    mprintf(L"%s", prompt);
+    fgets(password, sizeof(password), stdin);
+    password[strlen(password) - 1] = 0;
+
+    // restore terminal
+    if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0) {
+        return "\0";
+    }
+
+    return password;
+}
+#endif
+#endif
 
 static void GetPasswordText(wchar *Str,uint MaxLength)
 {
