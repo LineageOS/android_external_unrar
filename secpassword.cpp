@@ -1,12 +1,13 @@
 #include "rar.hpp"
 
-#ifdef _WIN_ALL
+#if defined(_WIN_ALL)
 typedef BOOL (WINAPI *CRYPTPROTECTMEMORY)(LPVOID pData,DWORD cbData,DWORD dwFlags);
 typedef BOOL (WINAPI *CRYPTUNPROTECTMEMORY)(LPVOID pData,DWORD cbData,DWORD dwFlags);
 
 #ifndef CRYPTPROTECTMEMORY_BLOCK_SIZE
 #define CRYPTPROTECTMEMORY_BLOCK_SIZE           16
 #define CRYPTPROTECTMEMORY_SAME_PROCESS         0x00
+#define CRYPTPROTECTMEMORY_CROSS_PROCESS        0x01
 #endif
 
 class CryptLoader
@@ -34,9 +35,10 @@ class CryptLoader
     {
       if (!LoadCalled)
       {
-        hCrypt = LoadLibraryW(L"Crypt32.dll");
+        hCrypt = LoadSysLibrary(L"Crypt32.dll");
         if (hCrypt != NULL)
         {
+          // Available since Vista.
           pCryptProtectMemory = (CRYPTPROTECTMEMORY)GetProcAddress(hCrypt, "CryptProtectMemory");
           pCryptUnprotectMemory = (CRYPTUNPROTECTMEMORY)GetProcAddress(hCrypt, "CryptUnprotectMemory");
         }
@@ -48,8 +50,8 @@ class CryptLoader
     CRYPTUNPROTECTMEMORY pCryptUnprotectMemory;
 };
 
-// We want to call FreeLibrary when RAR is exiting.
-CryptLoader GlobalCryptLoader;
+// We need to call FreeLibrary when RAR is exiting.
+static CryptLoader GlobalCryptLoader;
 #endif
 
 SecPassword::SecPassword()
@@ -67,7 +69,8 @@ SecPassword::~SecPassword()
 void SecPassword::Clean()
 {
   PasswordSet=false;
-  cleandata(Password,sizeof(Password));
+  if (Password.size()>0)
+    cleandata(&Password[0],Password.size());
 }
  
 
@@ -76,6 +79,8 @@ void SecPassword::Clean()
 // So we use our own function for this purpose.
 void cleandata(void *data,size_t size)
 {
+  if (data==NULL || size==0)
+    return;
 #if defined(_WIN_ALL) && defined(_MSC_VER)
   SecureZeroMemory(data,size);
 #else
@@ -94,58 +99,12 @@ void cleandata(void *data,size_t size)
 // people share the same computer and somebody left WinRAR copy with entered
 // password. So we decided to obfuscate the password to make it more difficult
 // to find it in dump.
-void SecPassword::Process(const wchar *Src,wchar *Dst,size_t MaxSize,bool Encode)
+void SecPassword::Process(const wchar *Src,size_t SrcSize,wchar *Dst,size_t DstSize,bool Encode)
 {
-#ifdef _WIN_ALL
-  // Try to utilize the secure Crypt[Un]ProtectMemory if possible.
-  if (GlobalCryptLoader.pCryptProtectMemory==NULL)
-    GlobalCryptLoader.Load();
-  if (Encode)
-  {
-    if (GlobalCryptLoader.pCryptProtectMemory!=NULL && 
-        MaxSize%CRYPTPROTECTMEMORY_BLOCK_SIZE==0)
-    {
-      memcpy(Dst,Src,MaxSize*sizeof(*Dst));
-      if (!GlobalCryptLoader.pCryptProtectMemory(Dst,DWORD(MaxSize*sizeof(*Dst)),
-          CRYPTPROTECTMEMORY_SAME_PROCESS))
-      {
-        ErrHandler.GeneralErrMsg("CryptProtectMemory failed");
-        ErrHandler.SysErrMsg();
-        ErrHandler.Exit(RARX_FATAL);
-      }
-      return;
-    }
-  }
-  else
-  {
-    if (GlobalCryptLoader.pCryptUnprotectMemory!=NULL && 
-        MaxSize%CRYPTPROTECTMEMORY_BLOCK_SIZE==0)
-    {
-      memcpy(Dst,Src,MaxSize*sizeof(*Dst));
-      if (!GlobalCryptLoader.pCryptUnprotectMemory(Dst,DWORD(MaxSize*sizeof(*Dst)),
-          CRYPTPROTECTMEMORY_SAME_PROCESS))
-      {
-        ErrHandler.GeneralErrMsg("CryptUnprotectMemory failed");
-        ErrHandler.SysErrMsg();
-        ErrHandler.Exit(RARX_FATAL);
-      }
-      return;
-    }
-  }
-#endif
-  
-  // CryptProtectMemory is not available, so only slightly obfuscate data.
-  uint Key;
-#ifdef _WIN_ALL
-  Key=GetCurrentProcessId();
-#elif defined(_UNIX)
-  Key=getpid();
-#else
-  Key=10203040; // Just an arbitrary value.
-#endif
-
-  for (size_t I=0;I<MaxSize;I++)
-    Dst[I]=wchar(Src[I]^(Key+I+75));
+  // Source string can be shorter than destination as in case when we process
+  // -p<pwd> parameter, so we need to take into account both sizes.
+  memcpy(Dst,Src,Min(SrcSize,DstSize)*sizeof(*Dst));
+  SecHideData(Dst,DstSize*sizeof(*Dst),Encode,false);
 }
 
 
@@ -153,7 +112,7 @@ void SecPassword::Get(wchar *Psw,size_t MaxSize)
 {
   if (PasswordSet)
   {
-    Process(Password,Psw,MaxSize,false);
+    Process(&Password[0],Password.size(),Psw,MaxSize,false);
     Psw[MaxSize-1]=0;
   }
   else
@@ -161,17 +120,18 @@ void SecPassword::Get(wchar *Psw,size_t MaxSize)
 }
 
 
+
+
 void SecPassword::Set(const wchar *Psw)
 {
-  if (*Psw==0)
-  {
-    PasswordSet=false;
-    memset(Password,0,sizeof(Password));
-  }
-  else
+  // Eliminate any traces of previously stored password for security reason
+  // in case it was longer than new one.
+  Clean();
+
+  if (*Psw!=0)
   {
     PasswordSet=true;
-    Process(Psw,Password,ASIZE(Password),true);
+    Process(Psw,wcslen(Psw)+1,&Password[0],Password.size(),true);
   }
 }
 
@@ -201,3 +161,58 @@ bool SecPassword::operator == (SecPassword &psw)
   return Result;
 }
 
+
+// Set CrossProcess to true if we need to pass a password to another process.
+// We use CrossProcess when transferring parameters to UAC elevated WinRAR
+// and Windows GUI SFX modules.
+void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
+{
+  // CryptProtectMemory is not available in UWP and CryptProtectData
+  // increases data size not allowing in place conversion.
+#if defined(_WIN_ALL)
+  // Try to utilize the secure Crypt[Un]ProtectMemory if possible.
+  if (GlobalCryptLoader.pCryptProtectMemory==NULL)
+    GlobalCryptLoader.Load();
+  size_t Aligned=DataSize-DataSize%CRYPTPROTECTMEMORY_BLOCK_SIZE;
+  DWORD Flags=CrossProcess ? CRYPTPROTECTMEMORY_CROSS_PROCESS : CRYPTPROTECTMEMORY_SAME_PROCESS;
+  if (Encode)
+  {
+    if (GlobalCryptLoader.pCryptProtectMemory!=NULL)
+    {
+      if (!GlobalCryptLoader.pCryptProtectMemory(Data,DWORD(Aligned),Flags))
+      {
+        ErrHandler.GeneralErrMsg(L"CryptProtectMemory failed");
+        ErrHandler.SysErrMsg();
+        ErrHandler.Exit(RARX_FATAL);
+      }
+      return;
+    }
+  }
+  else
+  {
+    if (GlobalCryptLoader.pCryptUnprotectMemory!=NULL)
+    {
+      if (!GlobalCryptLoader.pCryptUnprotectMemory(Data,DWORD(Aligned),Flags))
+      {
+        ErrHandler.GeneralErrMsg(L"CryptUnprotectMemory failed");
+        ErrHandler.SysErrMsg();
+        ErrHandler.Exit(RARX_FATAL);
+      }
+      return;
+    }
+  }
+#endif
+  
+  // CryptProtectMemory is not available, so only slightly obfuscate data.
+  uint Key;
+#ifdef _WIN_ALL
+  Key=GetCurrentProcessId();
+#elif defined(_UNIX)
+  Key=getpid();
+#else
+  Key=0; // Just an arbitrary value.
+#endif
+
+  for (size_t I=0;I<DataSize;I++)
+    *((byte *)Data+I)^=Key+I+75;
+}
