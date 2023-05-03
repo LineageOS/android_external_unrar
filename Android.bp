@@ -58,8 +58,6 @@ cc_binary {
         "-DUNRAR",
         "-D__BIONIC__",
         "-D_LARGEFILE_SOURCE",
-        "-DNOVOLUME",
-        "-DRAR_NOCRYPT",
     ] + [
         "-fexceptions",
         "-Wno-dangling-else",
