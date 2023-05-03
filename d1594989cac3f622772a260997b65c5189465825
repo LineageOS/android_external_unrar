@@ -34,6 +34,24 @@
       "parentUuid": "efd1241f_c0758b11",
       "revId": "d1594989cac3f622772a260997b65c5189465825",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7486df39_7bfcfadd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 16185
+      },
+      "writtenOn": "2023-05-03T14:48:19Z",
+      "side": 1,
+      "message": "yeah the hold initially on this was a rebase on newest upstream - that\u0027s the case for all the external repos.\n\nSo, awesome!",
+      "parentUuid": "b3c78abc_5491f9fa",
+      "revId": "d1594989cac3f622772a260997b65c5189465825",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
