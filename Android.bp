@@ -55,8 +55,6 @@ cc_binary {
     cflags: [
         "-DUNRAR",
         "-D_LARGEFILE_SOURCE",
-        "-DNOVOLUME",
-        "-DRAR_NOCRYPT",
     ] + [
         "-fexceptions",
         "-Wno-dangling-else",
