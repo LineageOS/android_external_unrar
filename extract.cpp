@@ -1570,7 +1570,7 @@ void CmdExtract::AnalyzeArchive(const wchar *ArcName,bool Volume,bool NewNumberi
 
               if (!AlreadyAdded && RefList.Size()<MaxListSize)
               {
-                ExtractRef Ref={0};
+                ExtractRef Ref=ExtractRef();
                 Ref.RefName=wcsdup(Arc.FileHead.RedirName);
                 Ref.RefCount=1;
                 RefList.Push(Ref);
