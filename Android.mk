@@ -1,3 +1,4 @@
+LOCAL_CLANG_EXCEPTION_PROJECTS += external/unrar
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -33,5 +34,6 @@ LOCAL_ARM_MODE := arm
 LOCAL_MODULE := unrar
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
+LOCAL_CLANG := false
 
 include $(BUILD_EXECUTABLE)
