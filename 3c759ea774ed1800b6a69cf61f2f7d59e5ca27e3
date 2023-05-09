@@ -157,6 +157,24 @@
       "parentUuid": "d1d2a32c_56c91db6",
       "revId": "3c759ea774ed1800b6a69cf61f2f7d59e5ca27e3",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0119f86_184bb546",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 17945
+      },
+      "writtenOn": "2023-05-09T19:40:20Z",
+      "side": 1,
+      "message": "Sure, thanks! Just to reiterate this is a squash, if everything works please merge this tree as it contains full commit history (including the ones bby lineage maintainers) since unrar x3.x\n\nhttps://github.com/DroidFreak32/android_external_unrar/commits/lineage-20.0\n\nWhile the branch is lineage-20.0 I have verified it on lineage-19.1 as well with kebab target. So the same HEAD can be on both branches",
+      "parentUuid": "337dd1d5_8dd31a8b",
+      "revId": "3c759ea774ed1800b6a69cf61f2f7d59e5ca27e3",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
