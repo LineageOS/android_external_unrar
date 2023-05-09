@@ -67,6 +67,24 @@
       "message": "I hardly think Android support exceptions in any meaningful way, and it seems to not use exceptions anywhere, remove",
       "revId": "3c759ea774ed1800b6a69cf61f2f7d59e5ca27e3",
       "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1d2a32c_56c91db6",
+        "filename": "Android.bp",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 17945
+      },
+      "writtenOn": "2023-05-09T19:31:54Z",
+      "side": 1,
+      "message": "This was actually needed. Without this, I get:\n```\nexternal/unrar/rar.cpp:35:3: error: cannot use \u0027try\u0027 with exceptions disabled\n  try\n  ^\n```",
+      "parentUuid": "bd136500_8faeb615",
+      "revId": "3c759ea774ed1800b6a69cf61f2f7d59e5ca27e3",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71"
     }
   ]
 }
