@@ -67,4 +67,6 @@ cc_binary {
         "-Wno-unused-variable",
     ],
 
+    product_specific: true,
+
 }
