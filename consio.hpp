@@ -5,10 +5,11 @@ void InitConsole();
 void SetConsoleMsgStream(MESSAGE_TYPE MsgStream);
 void SetConsoleRedirectCharset(RAR_CHARSET RedirectCharset);
 void ProhibitConsoleInput();
-void OutComment(const wchar *Comment,size_t Size);
+void OutComment(const std::wstring &Comment);
+bool IsConsoleOutputPresent();
 
 #ifndef SILENT
-bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *Password);
+bool GetConsolePassword(UIPASSWORD_TYPE Type,const std::wstring &FileName,SecPassword *Password);
 #endif
 
 #ifdef SILENT
@@ -19,13 +20,13 @@ bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *
 #ifdef __ANDROID__
   const char *getpass(const char *prompt);
 #endif
-  inline bool getwstr(wchar *str,size_t n) {return false;}
+  inline void getwstr(std::wstring &str) {}
 #else
   void mprintf(const wchar *fmt,...);
   void eprintf(const wchar *fmt,...);
   void Alarm();
   int Ask(const wchar *AskStr);
-  bool getwstr(wchar *str,size_t n);
+  void getwstr(std::wstring &str);
 #endif
 
 #endif
