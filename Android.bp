@@ -22,6 +22,7 @@ cc_binary {
       "global.cpp",
       "hash.cpp",
       "headers.cpp",
+      "largepage.cpp",
       "list.cpp",
       "match.cpp",
       "options.cpp",
